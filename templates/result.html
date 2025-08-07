@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Undian Kupon</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Undian Kupon Berhadiah 🎁</h1>
+    <div id="box" class="animated-box">Tekan tombol untuk mulai!</div>
+    <label for="jumlah">Jumlah Pemenang:</label>
+    <input type="number" id="jumlah" min="1" max="{{ data|length }}" value="1">
+    <button onclick="startDraw()">Undi Sekarang</button>
+
+    <script>
+    let data = {{ data|tojson }};
+    function startDraw() {
+        let jumlah = parseInt(document.getElementById('jumlah').value);
+        if (isNaN(jumlah) || jumlah < 1 || jumlah > data.length) {
+            alert("Jumlah tidak valid!");
+            return;
+        }
+
+        let box = document.getElementById("box");
+        box.classList.remove("winner");
+
+        let duration = 3000; // 3 sec animation
+        let interval = 100; 
+        let index = 0;
+        let currentName = '';
+
+        let animation = setInterval(() => {
+            let item = data[Math.floor(Math.random() * data.length)];
+            currentName = item['Nama'] + " (" + item['Nomor'] + ")";
+            box.innerText = currentName;
+            index += interval;
+            if (index >= duration) {
+                clearInterval(animation);
+
+                // ambil pemenang unik
+                let winners = [];
+                let available = [...data];
+                for (let i = 0; i < jumlah; i++) {
+                    let index = Math.floor(Math.random() * available.length);
+                    winners.push(available[index]);
+                    available.splice(index, 1);
+                }
+
+                // Tampilkan hasil
+                box.innerText = "🎉 Pemenang:\n" + winners.map(w => w['Nama'] + " (" + w['Nomor'] + ")").join('\n');
+                box.classList.add("winner");
+
+                // Simpan hasil
+                fetch("/save_winners", {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(winners)
+                });
+                }
+            }, interval);
+        }
+    </script>
+
+</body>
+</html>

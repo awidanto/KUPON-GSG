@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.animated-box {
+    font-size: 2em;
+    margin: 30px auto;
+    padding: 30px;
+    width: 60%;
+    border: 3px solid #333;
+    border-radius: 10px;
+    background: #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+.winner {
+    background: gold;
+    color: darkred;
+    font-weight: bold;
+    border-color: red;
+}
